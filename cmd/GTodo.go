@@ -7,6 +7,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/mergestat/timediff"
 )
 
 type Task struct {
@@ -149,7 +151,9 @@ func List() ([]string, error) {
 		if record[4] == "true" {
 			status = "Completed"
 		}
-		formattedData =  append(formattedData, record[0]+"\t"+record[1]+"\t"+status+"\n")
+		temp, err := time.Parse(time.RFC1123, record[2])
+		createdAt := timediff.TimeDiff(temp)
+		formattedData =  append(formattedData, record[0]+"\t"+record[1]+"\t"+status+"\t"+createdAt+"\n")
 	}
 	return formattedData, nil
 }

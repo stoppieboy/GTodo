@@ -21,7 +21,9 @@ var listCmd = &cobra.Command{
 		}
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 5, ' ', tabwriter.TabIndent)
 		// fmt.Println("All Tasks ----------------")
-		fmt.Fprintf(w, "No.\tTask\tStatus\t\n")
+		fmt.Fprintf(w, "No.\tTask\tStatus\tCreated At\n")
+		fmt.Fprintf(w, "---\t----\t------\t----------\n")
+
 		for i := range tasks {
 			fmt.Fprintf(w, "%s", tasks[i])
 		}
