@@ -1,6 +1,7 @@
 package cmd
 
 import (
+    "os"
 	"github.com/spf13/cobra"
 )
 
@@ -10,9 +11,12 @@ var (
 		Short: "A CLI TODO Application",
 		Long: "Track your tasks with local task persistence",
 	}
+	filePath = os.Getenv("USERPROFILE")+"\\GTodo\\tasks.csv"
+	tempFilePath = os.Getenv("USERPROFILE")+"\\GTodo\\tasks.temp.csv"
 )
 
 func init() {
+	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(completeCmd)

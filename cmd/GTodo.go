@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	// "bytes"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -22,7 +21,7 @@ type Task struct {
 // 1. determine the number of tasks in the list
 // 2. add the task with the correct ID
 func Add(task string) error {
-	file, err := os.OpenFile("tasks.csv", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0644)
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_RDWR, 0644)
 
 	if err != nil {
 		return err
@@ -53,12 +52,12 @@ func Add(task string) error {
 // 2. delete the task
 // 3. update the IDs of the remaining tasks
 func Delete(id int) error {
-	fin, err := os.Open("tasks.csv")
+	fin, err := os.Open(filePath)
 	defer fin.Close()
 	if err != nil {
 		return err
 	}
-	fout, err := os.Create("tasks.temp.csv")
+	fout, err := os.Create(tempFilePath)
 	defer fout.Close()
 	if err != nil {
 		return err
@@ -91,12 +90,12 @@ func Delete(id int) error {
 	}
 
 	fin.Close()
-	err = os.Remove("tasks.csv")
+	err = os.Remove(filePath)
 	if err != nil {
 		return err
 	}
 	fout.Close()
-	err = os.Rename("tasks.temp.csv", "tasks.csv")
+	err = os.Rename(tempFilePath, filePath)
 	if err != nil {
 		return err
 	}
@@ -122,7 +121,7 @@ func Complete(id int) error {
 
 func List() ([]string, error) {
 
-	file, err := os.Open("tasks.csv")
+	file, err := os.Open(filePath)
 	defer file.Close()
 	if err != nil {
 		return nil, err
@@ -153,4 +152,33 @@ func List() ([]string, error) {
 		formattedData =  append(formattedData, record[0]+"\t"+record[1]+"\t"+status+"\n")
 	}
 	return formattedData, nil
+}
+
+func Init() error {
+	err := os.RemoveAll(os.Getenv("USERPROFILE")+"\\GTodo")
+	err = os.MkdirAll(os.Getenv("USERPROFILE")+"\\GTodo", 0777)
+	if err != nil {
+		fmt.Println("Error creating directory: ", err)
+		return err
+	}
+
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0644)
+
+	if err != nil {
+		fmt.Println("Error creating file: ", err)
+		return err
+	}
+
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+
+	entry := []string{"0", "", "", "", ""} // {No. of tasks,,,,}
+	writer.Write(entry)
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		fmt.Println("Error writing CSV data: ", err)
+		return err
+	}
+	return nil
 }

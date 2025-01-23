@@ -9,7 +9,7 @@ import (
 )
 
 func getRecord(id int) (Task, error) {
-	fin, err := os.Open("tasks.csv")
+	fin, err := os.Open(filePath)
 	defer fin.Close()
 	if err != nil {
 		return Task{}, err
@@ -35,12 +35,12 @@ func getRecord(id int) (Task, error) {
 }
 
 func updateRecord(id int, task string, createdAt time.Time, completedAt time.Time, completed bool) error {
-	fin, err := os.Open("tasks.csv")
+	fin, err := os.Open(filePath)
 	defer fin.Close()
 	if err != nil {
 		return err
 	}
-	fout, err := os.Create("tasks.temp.csv")
+	fout, err := os.Create(tempFilePath)
 	defer fout.Close()
 	if err != nil {
 		return err
@@ -68,13 +68,13 @@ func updateRecord(id int, task string, createdAt time.Time, completedAt time.Tim
 	}
 
 	fin.Close()
-	err = os.Remove("tasks.csv")
+	err = os.Remove(filePath)
 	if err != nil {
 		return err
 	}
 
 	fout.Close()
-	err = os.Rename("tasks.temp.csv", "tasks.csv")
+	err = os.Rename(tempFilePath, filePath)
 	if err != nil {
 		return err
 	}
@@ -83,12 +83,12 @@ func updateRecord(id int, task string, createdAt time.Time, completedAt time.Tim
 }
 
 func updateData(nt int) error {
-	fin, err := os.Open("tasks.csv")
+	fin, err := os.Open(filePath)
 	defer fin.Close()
 	if err != nil {
 		return err
 	}
-	fout, err := os.Create("tasks.temp.csv")
+	fout, err := os.Create(tempFilePath)
 	defer fout.Close()
 	if err != nil {
 		return err
@@ -113,13 +113,13 @@ func updateData(nt int) error {
 	}
 
 	fin.Close()
-	err = os.Remove("tasks.csv")
+	err = os.Remove(filePath)
 	if err != nil {
 		return err
 	}
 
 	fout.Close()
-	err = os.Rename("tasks.temp.csv", "tasks.csv")
+	err = os.Rename(tempFilePath, filePath)
 	if err != nil {
 		return err
 	}
